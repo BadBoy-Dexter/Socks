@@ -5,7 +5,7 @@ LISTENING_ADDR = '0.0.0.0'
 if sys.argv[1:]:
   LISTENING_PORT = sys.argv[1]
 else:
-  LISTENING_PORT = 8002  
+  LISTENING_PORT = 8002 
 #Pass
 PASS = ''
 
@@ -13,7 +13,7 @@ PASS = ''
 BUFLEN = 4096 * 4
 TIMEOUT = 60
 DEFAULT_HOST = '127.0.0.1:446'
-RESPONSE = 'HTTP/1.1 101 <font color="red">Tknetwork</font>\r\n\r\nContent-Length: 104857600000\r\n\r\n'
+RESPONSE = 'HTTP/1.1 101 <font color="red">Dexter Eskalarte</font>\r\n\r\nContent-Length: 104857600000\r\n\r\n'
 
 class Server(threading.Thread):
     def __init__(self, host, port):
@@ -169,7 +169,7 @@ class ConnectionHandler(threading.Thread):
             host = host[:i]
         else:
             if self.method=='CONNECT':
-                port = 442
+                port = 446
             else:
                 port = sys.argv[1]
 
@@ -225,7 +225,7 @@ class ConnectionHandler(threading.Thread):
 def print_usage():
     print 'Usage: proxy.py -p <port>'
     print '       proxy.py -b <bindAddr> -p <port>'
-    print '       proxy.py -b 0.0.0.0 -p 8030'
+    print '       proxy.py -b 0.0.0.0 -p 80'
 
 def parse_args(argv):
     global LISTENING_ADDR
