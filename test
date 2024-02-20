@@ -599,8 +599,8 @@ mkdir /etc/zivpn 1> /dev/null 2> /dev/null
 
 echo '{
   "listen": ":5666",
-  "cert": "/etc/zivpn/zivpn.crt",
-  "key":  "/etc/zivpn/zivpn.key",
+  "cert": "/etc/openvpn/easy-rsa/keys/server.crt",
+  "key": "/etc/openvpn/easy-rsa/keys/server.key",
   "obfs":"firenet",
   "auth": {
     "mode": "external",
@@ -613,11 +613,10 @@ echo '{
 
 sed -i "s|firenet|$OBFS|g" /etc/zivpn/config.json
 
-openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 -subj "/C=US/ST=California/L=Los Angeles/O=Example Corp/OU=IT Department/CN=zivpn" -keyout "/etc/zivpn/zivpn.key" -out "/etc/zivpn/zivpn.crt"
 sysctl -w net.core.rmem_max=16777216 1> /dev/null 2> /dev/null
 sysctl -w net.core.wmem_max=16777216 1> /dev/null 2> /dev/null
 
-cat <<EOF > /etc/systemd/system/zivpn.service
+cat <<EOF > /etc/systemd/system/hysteria-server.service
 [Unit]
 Description=zivpn VPN Server
 After=network.target
@@ -638,8 +637,8 @@ NoNewPrivileges=true
 WantedBy=multi-user.target
 EOF
 
-systemctl enable zivpn.service
-systemctl start zivpn.service
+systemctl enable hysteria-server.service
+systemctl start hysteria-server.service
 
 cat <<"EOM" >/etc/zivpn/.auth.sh
 #!/bin/bash
@@ -665,6 +664,8 @@ EOM
 
 chmod 755 /etc/zivpn/.auth.sh
 chmod 755 /etc/zivpn/config.json
+chmod 755 /etc/openvpn/easy-rsa/keys/server.crt
+chmod 755 /etc/openvpn/easy-rsa/keys/server.key
 
 wget -O /usr/bin/badvpn-udpgw "https://github.com/Dexter-Hysteria/status/raw/mtk_vpn/badvpn-udpgw64"
 chmod +x /usr/bin/badvpn-udpgw
@@ -705,7 +706,6 @@ service stunnel4 restart
 systemctl restart openvpn@server.service
 systemctl restart openvpn@server2.service
 systemctl restart hysteria-server.service
-systemctl restart zivpn.service
 ps x | grep 'udpvpn' | grep -v 'grep' || screen -dmS udpvpn /usr/bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 10000 --max-connections-for-client 10 --client-socket-sndbuf 10000
 screen -dmS webinfo php -S 0.0.0.0:5623 -t /root/.web/
 bash /etc/.monitor openvpn
