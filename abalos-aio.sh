@@ -1007,7 +1007,7 @@ server_ip=$(curl -s ipinfo.io/ip)
 server_interface=$(ip route get 8.8.8.8 | awk '/dev/ {f=NR} f&&NR-1==f' RS=" ")
 serverVersion=`awk '/^VERSION_ID=/' /etc/*-release | awk -F'=' '{ print tolower($2) }'`
 
-install_sudo
+#install_sudo
 install_require  
 install_hysteria
 installBBR
