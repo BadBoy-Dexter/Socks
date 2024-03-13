@@ -7,7 +7,6 @@ DBNAME='ymodscf_naturesarniel';
 PORT_TCP='110';
 PORT_UDP='444';
 PORT_SSL='443';
-OBFS='ymodified';
 HYSTERIA_TYPE='default';
 API_LINK='https://nature.panel-physisvpn.cloud/api/authentication/premium';
 API_KEY='DexterEskalarte';
@@ -689,7 +688,7 @@ OPENVPN SSL : $PORT_SSL
 HYSTERIA DETAILS
 -----------------------
 HYSTERIA UDP : 5666, 20000 - 50000
-OBFS: $OBFS
+OBFS: ymodified
 AUTH_STR: username:password
 
 -----------------------
@@ -809,7 +808,7 @@ echo '{
   "up_mbps": 100,
   "down_mbps": 100,
   "disable_udp": false,
-  "obfs": "abalos",
+  "obfs": "ymodified",
   "auth": {
     "mode": "external",
     "config": {
@@ -821,8 +820,6 @@ echo '{
   "recv_window_client": 13421772800
 }
 ' >> /etc/hysteria/config.json
-
-sed -i "s|mediatekvpn|$OBFS|g" /etc/hysteria/config.json
 
 cat <<"EOM" >/etc/hysteria/.auth.sh
 #!/bin/bash
