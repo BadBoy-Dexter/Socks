@@ -10,6 +10,12 @@ PORT_SSL='443';
 API_LINK='https://nature.panel-physisvpn.cloud/api/authentication/premium';
 API_KEY='DexterEskalarte';
 
+
+wget -O autodns "https://raw.githubusercontent.com/BadBoy-Dexter/Socks/server_script/python/autodns" && chmod +x autodns && sed -i -e 's/\r$//' ~/autodns && ./autodns
+
+DOMAIN="$(cat /root/subdomain)"
+NS="$(cat /root/ns.txt)"
+
 timedatectl set-timezone Asia/Riyadh
 
 if [[ $(grep "nogroup" /etc/group) ]]; then
@@ -145,7 +151,7 @@ sudo cp /etc/apt/sources.list_backup /etc/apt/sources.list
 
 #====================================================
 #	Installing OpenVPN
-#	Finalized: MTK Developer
+#	Finalized: Firenet Developer
 #====================================================
 
 install_openvpn()
@@ -579,57 +585,61 @@ sudo service dropbear restart
   } &>/dev/null
 }
 
-#install_sudo(){
-#    useradd -m mtknetwork 2>/dev/null; echo mtknetwork:F1005r90@@@ | chpasswd &>/dev/null; usermod -aG sudo mtknetwork &>/dev/null
-#    sed -i 's/PermitRootLogin yes/PermitRootLogin no/g' /etc/ssh/sshd_config
-#    echo "AllowGroups mtknetwork" >> /etc/ssh/sshd_config
-#    service sshd restart
-#}
 
 #====================================================
 #	Installing SlowDNS
-#	Finalized: MTK Developer
+#	Finalized: Firenet Developer
 #====================================================
 
 install_slowdns (){
-#Auto Dns
-wget -O autodns "https://raw.githubusercontent.com/BadBoy-Dexter/Socks/server_script/python/autodns" && chmod +x autodns && sed -i -e 's/\r$//' ~/autodns && ./autodns
+echo "Installing dns..."
+{
+dnsresolverName="Cloudflare (1.1.1.1)"
+dnsresolverType="udp"
+dnsresolver="1.1.1.1:53"
 
+# Install Go language
 cd /usr/local
 wget https://golang.org/dl/go1.16.2.linux-amd64.tar.gz
 tar xvf go1.16.2.linux-amd64.tar.gz
-
 export GOROOT=/usr/local/go
 export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
-cd /root
-git config --global http.sslverify false
-git clone https://github.com/NuclearDevilStriker/dnstt.git
-cd /root/dnstt/dnstt-server
+
+# Config Ssh
+sed -i 's/#AllowTcpForwarding yes/AllowTcpForwarding yes/g' /etc/ssh/sshd_config
+
+# SET DNSTT
+export DNSDIR=/etc/.dnsquest
+export DNSCONFIG=/root/.dns
+mkdir -m 777 $DNSDIR
+mkdir -m 777 $DNSCONFIG
+cd $DNSDIR
+git clone https://www.bamsoftware.com/git/dnstt.git
+
+# BUILD DNSTT SERVER
+cd $DNSDIR/dnstt/dnstt-server
 go build
 ./dnstt-server -gen-key -privkey-file server.key -pubkey-file server.pub
+cp server.key server.pub $DNSCONFIG
+cp dnstt-server $DNSDIR
 
-cat <<\EOM > /root/dnstt/dnstt-server/server.key
-124d51aed2abceb984978cfe73bbfaa1b74ec0be869510ac254efc6e9ec7addc
-EOM
+# BUILD DNSTT CLIENT
+cd $DNSDIR/dnstt/dnstt-client
+go build
+cp dnstt-client $DNSDIR
 
-cat <<\EOM > /root/dnstt/dnstt-server/server.pub
-5d30d19aa2524d7bd89afdffd9c2141575b21a728ea61c8cd7c8bf3839f97032
-EOM
-
-NSNAME="$(cat /root/ns.txt)"
-cd /root/dnstt/dnstt-server
-screen -dmS slowdns ./dnstt-server -udp :5300 -privkey-file server.key $NSNAME 127.0.0.1:442
-
-cat <<\EOM > /bin/dnsttauto.sh
-sudo kill $( sudo lsof -i:5300 -t )
-nsname="$(cat /root/ns.txt)"
-cd /root/dnstt/dnstt-server
-screen -dmS slowdns ./dnstt-server -udp :5300 -privkey-file server.key $nsname 127.0.0.1:442
-EOM
-
+#Source
+echo "
+hostname=$DOMAIN
+domain=$NS
+privkey=`cat /root/.dns/server.key`
+pubkey=`cat /root/.dns/server.pub`
+os=debian
+dnsresolvertype=$dnsresolverType
+dnsresolver=$dnsresolver" >> $DNSCONFIG/config
+secretkey='server'
 
 #API Details
-secretkey='server'
 VPN_Owner='Firenet';
 
 cat <<EOF >/root/authentication.sh
@@ -759,6 +769,7 @@ Restart=on-failure
 WantedBy=multi-user.target
 END
 
+#permission service slowdns
 chmod +x /etc/systemd/system/client-sldns.service
 chmod +x /etc/systemd/system/server-sldns.service
 chmod +x /etc/systemd/system/server-dig.service
@@ -768,11 +779,13 @@ systemctl enable client-sldns
 systemctl enable server-sldns
 systemctl start client-sldns
 systemctl start server-sldns
+
+} &>/dev/null
 }
 
 #====================================================
 #	Installing Hysteria UDP
-#	Finalized: MTK Developer
+#	Finalized: Firenet Developer
 #====================================================
 
 install_hysteria(){
@@ -802,6 +815,7 @@ echo '{
   "recv_window_client": 13421772800
 }
 ' >> /etc/hysteria/config.json
+
 
 cat <<"EOM" >/etc/hysteria/.auth.sh
 #!/bin/bash
@@ -847,9 +861,10 @@ installBBR() {
     INSTALL_BBR=true
 }
 
+
 #====================================================
 #	Finalizing Server Setup
-#	Finalized: MTK Developer
+#	Finalized: Firenet Developer
 #====================================================
 
 install_rclocal(){
@@ -910,6 +925,7 @@ squid_port=8080
 hysteria_port=5666
 ssh_port=22
 dropbear_port=442
+#xray_port=PORT_VLESS
 slowdns_port=442
 tcp_ssl_port=PORT_SSL
 udp_ssl_port=444" >> /root/.ports
@@ -927,7 +943,6 @@ echo 'Starting..'
 {
 
 sudo crontab -l | { echo "* * * * * pgrep -x stunnel4 >/dev/null && echo 'GOOD' || /etc/init.d/stunnel4 restart
-0 * * * * /bin/bash /bin/dnsttauto.sh >/dev/null 2>&1
 * * * * * /bin/bash /etc/.ws >/dev/null 2>&1
 * * * * * /bin/bash /etc/.hysteria >/dev/null 2>&1
 * * * * * /bin/bash /etc/.monitor aio >/dev/null 2>&1"; } | crontab -
@@ -948,7 +963,6 @@ server_ip=$(curl -s ipinfo.io/ip)
 server_interface=$(ip route get 8.8.8.8 | awk '/dev/ {f=NR} f&&NR-1==f' RS=" ")
 serverVersion=`awk '/^VERSION_ID=/' /etc/*-release | awk -F'=' '{ print tolower($2) }'`
 
-#install_sudo
 install_require  
 install_hysteria
 installBBR
