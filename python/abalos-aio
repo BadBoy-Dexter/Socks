@@ -632,8 +632,8 @@ cp dnstt-client $DNSDIR
 
 #Source
 echo "
-hostname=$SUB_DOMAIN
-domain=$NS_DOMAIN
+hostname=`cat /root/subdomain`
+domain=`cat /root/ns.txt`
 privkey=`cat /root/.dns/server.key`
 pubkey=`cat /root/.dns/server.pub`
 os=debian
