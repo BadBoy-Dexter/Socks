@@ -639,7 +639,6 @@ pubkey=`cat /root/.dns/server.pub`
 os=debian
 dnsresolvertype=$dnsresolverType
 dnsresolver=$dnsresolver" >> $DNSCONFIG/config
-secretkey='server'
 
 #API Details
 VPN_Owner='Firenet';
@@ -709,7 +708,7 @@ DNS PUBLIC KEY : $(cat /root/.dns/server.pub)
 FB Page : https://web.facebook.com/dexter.eskalarte
 Whatsapp Contact: +639709310250
 
-" >> /root/.web/$secretkey.txt
+" >> /root/.web/server.txt
 
 #install client-sldns.service
 cat > /etc/systemd/system/client-sldns.service << END
@@ -922,7 +921,6 @@ squid_port=8080
 hysteria_port=5666
 ssh_port=22
 dropbear_port=442
-#xray_port=PORT_VLESS
 slowdns_port=442
 tcp_ssl_port=PORT_SSL
 udp_ssl_port=444" >> /root/.ports
