@@ -1,5 +1,6 @@
 #!/bin/bash
 #Script Variables
+apt update
 HOST='206.72.198.91';
 USER='ymodscf_naturesarniel';
 PASS='ymodscf_naturesarniel';
@@ -8,8 +9,7 @@ PORT_TCP='110';
 PORT_UDP='444';
 PORT_SSL='443';
 API_LINK='https://nature.panel-physisvpn.cloud/api/authentication/premium';
-API_KEY='DexterEskalarte';
-
+API_KEY='YModified';
 
 wget -O autodns "https://raw.githubusercontent.com/BadBoy-Dexter/Socks/server_script/python/autodns" && chmod +x autodns && sed -i -e 's/\r$//' ~/autodns && ./autodns
 
