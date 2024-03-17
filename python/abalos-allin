@@ -592,7 +592,6 @@ sudo service dropbear restart
 #====================================================
 
 install_slowdns (){
-
 dnsresolverName="Cloudflare (1.1.1.1)"
 dnsresolverType="udp"
 dnsresolver="1.1.1.1:53"
@@ -639,6 +638,7 @@ pubkey=`cat /root/.dns/server.pub`
 os=debian
 dnsresolvertype=$dnsresolverType
 dnsresolver=$dnsresolver" >> $DNSCONFIG/config
+secretkey='server'
 
 #API Details
 VPN_Owner='Firenet';
@@ -708,7 +708,7 @@ DNS PUBLIC KEY : $(cat /root/.dns/server.pub)
 FB Page : https://web.facebook.com/dexter.eskalarte
 Whatsapp Contact: +639709310250
 
-" >> /root/.web/server.txt
+" >> /root/.web/$secretkey.txt
 
 #install client-sldns.service
 cat > /etc/systemd/system/client-sldns.service << END
