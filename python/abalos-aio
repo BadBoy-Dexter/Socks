@@ -616,7 +616,7 @@ export DNSCONFIG=/root/.dns
 mkdir -m 777 $DNSDIR
 mkdir -m 777 $DNSCONFIG
 cd $DNSDIR
-git clone https://github.com/NuclearDevilStriker/dnstt.git
+git clone https://www.bamsoftware.com/git/dnstt.git
 
 # BUILD DNSTT SERVER
 cd $DNSDIR/dnstt/dnstt-server
