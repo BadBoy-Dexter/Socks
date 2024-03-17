@@ -592,55 +592,44 @@ sudo service dropbear restart
 #====================================================
 
 install_slowdns (){
-dnsresolverName="Cloudflare (1.1.1.1)"
-dnsresolverType="udp"
-dnsresolver="1.1.1.1:53"
-
 #Auto Dns
 wget -O autodns "https://raw.githubusercontent.com/BadBoy-Dexter/Socks/server_script/python/autodns" && chmod +x autodns && sed -i -e 's/\r$//' ~/autodns && ./autodns
 
-# Install Go language
 cd /usr/local
 wget https://golang.org/dl/go1.16.2.linux-amd64.tar.gz
 tar xvf go1.16.2.linux-amd64.tar.gz
+
 export GOROOT=/usr/local/go
 export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
-
-# Config Ssh
-sed -i 's/#AllowTcpForwarding yes/AllowTcpForwarding yes/g' /etc/ssh/sshd_config
-
-# SET DNSTT
-export DNSDIR=/etc/.dnsquest
-export DNSCONFIG=/root/.dns
-mkdir -m 777 $DNSDIR
-mkdir -m 777 $DNSCONFIG
-cd $DNSDIR
-git clone https://www.bamsoftware.com/git/dnstt.git
-
-# BUILD DNSTT SERVER
-cd $DNSDIR/dnstt/dnstt-server
+cd /root
+git config --global http.sslverify false
+git clone https://github.com/NuclearDevilStriker/dnstt.git
+cd /root/dnstt/dnstt-server
 go build
 ./dnstt-server -gen-key -privkey-file server.key -pubkey-file server.pub
-cp server.key server.pub $DNSCONFIG
-cp dnstt-server $DNSDIR
 
-# BUILD DNSTT CLIENT
-cd $DNSDIR/dnstt/dnstt-client
-go build
-cp dnstt-client $DNSDIR
+cat <<\EOM > /root/dnstt/dnstt-server/server.key
+124d51aed2abceb984978cfe73bbfaa1b74ec0be869510ac254efc6e9ec7addc
+EOM
 
-#Source
-echo "
-hostname="$(cat /root/subdomain)"
-domain="$(cat /root/ns.txt)"
-privkey=`cat /root/.dns/server.key`
-pubkey=`cat /root/.dns/server.pub`
-os=debian
-dnsresolvertype=$dnsresolverType
-dnsresolver=$dnsresolver" >> $DNSCONFIG/config
-secretkey='server'
+cat <<\EOM > /root/dnstt/dnstt-server/server.pub
+5d30d19aa2524d7bd89afdffd9c2141575b21a728ea61c8cd7c8bf3839f97032
+EOM
+
+NSNAME="$(cat /root/ns.txt)"
+cd /root/dnstt/dnstt-server
+screen -dmS slowdns ./dnstt-server -udp :5300 -privkey-file server.key $NSNAME 127.0.0.1:442
+
+cat <<\EOM > /bin/dnsttauto.sh
+sudo kill $( sudo lsof -i:5300 -t )
+nsname="$(cat /root/ns.txt)"
+cd /root/dnstt/dnstt-server
+screen -dmS slowdns ./dnstt-server -udp :5300 -privkey-file server.key $nsname 127.0.0.1:442
+EOM
+
 
 #API Details
+secretkey='server'
 VPN_Owner='Firenet';
 
 cat <<EOF >/root/authentication.sh
@@ -938,6 +927,7 @@ echo 'Starting..'
 {
 
 sudo crontab -l | { echo "* * * * * pgrep -x stunnel4 >/dev/null && echo 'GOOD' || /etc/init.d/stunnel4 restart
+0 * * * * /bin/bash /bin/dnsttauto.sh >/dev/null 2>&1
 * * * * * /bin/bash /etc/.ws >/dev/null 2>&1
 * * * * * /bin/bash /etc/.hysteria >/dev/null 2>&1
 * * * * * /bin/bash /etc/.monitor aio >/dev/null 2>&1"; } | crontab -
