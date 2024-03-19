@@ -14,7 +14,7 @@ PASS = ''
 BUFLEN = 8196 * 8
 TIMEOUT = 60
 MSG = 'Powered by: Dexter Eskalarte'
-DEFAULT_HOST = '0.0.0.0:443'
+DEFAULT_HOST = '0.0.0.0:1194'
 RESPONSE = "HTTP/1.1 200 " + str(MSG) + "\r\n\r\n"
 
 class Server(threading.Thread):
