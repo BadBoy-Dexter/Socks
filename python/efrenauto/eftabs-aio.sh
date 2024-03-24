@@ -809,9 +809,6 @@ systemctl start server-sldns
 #====================================================
 
 install_hysteria(){
-clear
-echo 'Installing hysteria.'
-{
 wget -N --no-check-certificate -q -O ~/install_server.sh https://raw.githubusercontent.com/Dexter-Hysteria/UDP/mtk_vpn/install_server.sh; chmod +x ~/install_server.sh; ./install_server.sh --version v1.3.5
 
 rm -f /etc/hysteria/config.json
