@@ -867,7 +867,6 @@ sysctl -w net.core.wmem_max=16777216
 
 wget -O /usr/bin/badvpn-udpgw "https://github.com/Dexter-Hysteria/status/raw/mtk_vpn/badvpn-udpgw64"
 chmod +x /usr/bin/badvpn-udpgw
-} &>/dev/null
 }
 
 installBBR() {
