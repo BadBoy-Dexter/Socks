@@ -684,7 +684,7 @@ dnsresolvertype=$dnsresolverType
 dnsresolver=$dnsresolver" >> $DNSCONFIG/config
 secretkey='server'
 
-
+echo "Hi! this is your server information, Happy Surfing!
 IP : $server_ip
 Hostname: $(cat /root/subdomain)
 
