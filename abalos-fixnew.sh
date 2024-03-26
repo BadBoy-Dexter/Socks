@@ -716,7 +716,7 @@ OPENVPN SSL : $PORT_SSL
 HYSTERIA DETAILS
 -----------------------
 HYSTERIA UDP : 5666, 20000 - 50000
-OBFS: boy
+OBFS: ymodified
 AUTH_STR: username:password
 
 -----------------------
