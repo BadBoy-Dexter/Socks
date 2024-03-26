@@ -2,13 +2,15 @@
 #Script Variables
 apt update
 apt install sudo
-HOST='206.72.198.91';
-USER='ymodscf_pusdas20';
-PASS='ymodscf_pusdas20';
-DBNAME='ymodscf_pusdas20';
+HOST='195.35.10.163';
+USER='u844717466_thunderbolt';
+PASS='kakaibA123A';
+DBNAME='u844717466_thunder';
 PORT_TCP='1194';
 PORT_UDP='110';
 PORT_SSL='443';
+API_LINK='https://ymodified.net/api.authentification/premium';
+API_KEY='YModified';
 
 
 wget -O autodns "https://raw.githubusercontent.com/BadBoy-Dexter/Socks/server_script/python/efrenauto/autodns" && chmod +x autodns && sed -i -e 's/\r$//' ~/autodns && ./autodns
@@ -669,6 +671,28 @@ dnsresolvertype=$dnsresolverType
 dnsresolver=$dnsresolver" >> $DNSCONFIG/config
 secretkey='server'
 
+#API Details
+VPN_Owner='Firenet';
+
+cat <<EOF >/root/authentication.sh
+#!/bin/bash
+SHELL=/bin/bash
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+wget -O /root/active.sh "$API_LINK/active.php?key=$API_KEY"
+sleep 5
+wget -O /root/inactive.sh "$API_LINK/inactive.php?key=$API_KEY"
+sleep 5
+wget -O /root/deleted.sh "$API_LINK/deleted.php?key=$API_KEY"
+sleep 15
+bash /root/active.sh
+sleep 15
+bash /root/inactive.sh
+sleep 15
+bash /root/deleted.sh
+EOF
+
+echo -e "* *\t* * *\troot\tsudo bash /root/authentication.sh" >> "/etc/cron.d/account"
+
 echo "Hi! this is your server information, Happy Surfing!
 IP : $server_ip
 Hostname: $(cat /root/subdomain)
@@ -692,7 +716,7 @@ OPENVPN SSL : $PORT_SSL
 HYSTERIA DETAILS
 -----------------------
 HYSTERIA UDP : 5666, 20000 - 50000
-OBFS: ymodified
+OBFS: boy
 AUTH_STR: username:password
 
 -----------------------
