@@ -692,7 +692,7 @@ OPENVPN SSL : $PORT_SSL
 HYSTERIA DETAILS
 -----------------------
 HYSTERIA UDP : 5666, 20000 - 50000
-OBFS: boy
+OBFS: ymodified
 AUTH_STR: username:password
 
 -----------------------
@@ -805,7 +805,7 @@ echo '{
   "up_mbps": 100,
   "down_mbps": 100,
   "disable_udp": false,
-  "obfs": "boy",
+  "obfs": "ymodified",
   "auth": {
     "mode": "external",
     "config": {
